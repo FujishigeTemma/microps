@@ -36,3 +36,16 @@ $(TESTS): %.exe : %.o $(OBJS) $(DRIVERS)
 
 clean:
 	rm -rf $(APPS) $(APPS:.exe=.o) $(OBJS) $(DRIVERS) $(TESTS) $(TESTS:.exe=.o)
+
+PHONY: up
+up:
+	@docker-compose up -d --build
+	@docker-compose exec main bash
+
+PHONY: down
+down:
+	@docker-compose down -v
+
+PHONY: main
+main:
+	@docker-compose exec main bash
