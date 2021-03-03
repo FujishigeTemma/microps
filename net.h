@@ -8,40 +8,48 @@
 #define IFNAMSIZ 16
 #endif
 
-#define NET_DEVICE_TYPE_NULL      0x0000
-#define NET_DEVICE_TYPE_LOOPBACK  0x0001
-#define NET_DEVICE_TYPE_ETHERNET  0x0002
+#define NET_DEVICE_TYPE_NULL 0x0000
+#define NET_DEVICE_TYPE_LOOPBACK 0x0001
+#define NET_DEVICE_TYPE_ETHERNET 0x0002
 
-#define NET_DEVICE_FLAG_UP        0x0001
-#define NET_DEVICE_FLAG_LOOPBACK  0x0010
+#define NET_DEVICE_FLAG_UP 0x0001
+#define NET_DEVICE_FLAG_LOOPBACK 0x0010
 #define NET_DEVICE_FLAG_BROADCAST 0x0020
-#define NET_DEVICE_FLAG_P2P       0x0040
-#define NET_DEVICE_FLAG_NEED_ARP  0x0100
+#define NET_DEVICE_FLAG_P2P 0x0040
+#define NET_DEVICE_FLAG_NEED_ARP 0x0100
 
 #define NET_DEVICE_ADDR_LEN 16
 
 #define NET_DEVICE_IS_UP(x) ((x)->flags & NET_DEVICE_FLAG_UP)
 #define NET_DEVICE_STATE(x) (NET_DEVICE_IS_UP(x) ? "up" : "down")
 
-struct net_device {
+/* NOTE: using same value as the Ethernet types */
+#define NET_PROTOCOL_TYPE_IP 0x0800
+#define NET_PROTOCOL_TYPE_ARP 0x0806
+#define NET_PROTOCOL_TYPE_IPV6 0x86dd
+
+struct net_device
+{
     struct net_device *next;
     unsigned int index;
     char name[IFNAMSIZ];
-    uint16_t type; /* device type */
-    uint16_t mtu; /* maximum transmission unit */
+    uint16_t type;  /* device type */
+    uint16_t mtu;   /* maximum transmission unit */
     uint16_t flags; /* flags defined above */
-    uint16_t hlen; /* header length */
-    uint16_t alen; /* address length */
+    uint16_t hlen;  /* header length */
+    uint16_t alen;  /* address length */
     uint8_t addr[NET_DEVICE_ADDR_LEN];
-    union {
+    union
+    {
         uint8_t peer[NET_DEVICE_ADDR_LEN];
         uint8_t broadcast[NET_DEVICE_ADDR_LEN];
     };
     struct net_device_ops *ops; /* net device operations */
-    void *priv; /* private data */
+    void *priv;                 /* private data */
 };
 
-struct net_device_ops {
+struct net_device_ops
+{
     int (*open)(struct net_device *dev);
     int (*close)(struct net_device *dev);
     int (*transmit)(struct net_device *dev, uint16_t type, const uint8_t *data, size_t len, const void *dst); /* required */
@@ -57,6 +65,9 @@ net_device_output(struct net_device *dev, uint16_t type, const uint8_t *data, si
 
 extern int
 net_input_handler(uint16_t type, const uint8_t *data, size_t len, struct net_device *dev);
+
+extern int
+net_protocol_register(uint16_t type, void (*handler)(const uint8_t *data, size_t len, struct net_device *dev));
 
 extern int
 net_run(void);

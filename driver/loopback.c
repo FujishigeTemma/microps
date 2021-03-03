@@ -29,7 +29,7 @@ loopback_init(void)
     dev = net_device_alloc();
     if (!dev)
     {
-        errorf("net_device_alloc() failure, dev=%s", dev->name);
+        errorf("net_device_alloc() failed, dev=%s", dev->name);
         return NULL;
     }
 
@@ -42,7 +42,7 @@ loopback_init(void)
 
     if (net_device_register(dev) == -1)
     {
-        errorf("net_device_register() failure, dev=%s", dev->name);
+        errorf("net_device_register() failed, dev=%s", dev->name);
         return NULL;
     }
     debugf("initialized, dev=%s", dev->name);
