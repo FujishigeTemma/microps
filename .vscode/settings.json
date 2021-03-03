@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "net.h": "c",
-    "__locale": "c"
+    "__locale": "c",
+    "__threading_support": "cpp",
+    "thread": "cpp"
   }
 }
