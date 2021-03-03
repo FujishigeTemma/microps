@@ -16,25 +16,29 @@
 #define tailof(x) (x + countof(x))
 #define indexof(x, y) (((uintptr_t)y - (uintptr_t)x) / sizeof(*y))
 
-#define timeval_add_usec(x, y)         \
-    do {                               \
-        (x)->tv_sec += y / 1000000;    \
-        (x)->tv_usec += y % 1000000;   \
-        if ((x)->tv_usec >= 1000000) { \
-            (x)->tv_sec += 1;          \
-            (x)->tv_usec -= 1000000;   \
-        }                              \
-    } while(0);
+#define timeval_add_usec(x, y)       \
+    do                               \
+    {                                \
+        (x)->tv_sec += y / 1000000;  \
+        (x)->tv_usec += y % 1000000; \
+        if ((x)->tv_usec >= 1000000) \
+        {                            \
+            (x)->tv_sec += 1;        \
+            (x)->tv_usec -= 1000000; \
+        }                            \
+    } while (0);
 
-#define timespec_add_nsec(x, y)           \
-    do {                                  \
-        (x)->tv_sec += y / 1000000000;    \
-        (x)->tv_nsec += y % 1000000000;   \
-        if ((x)->tv_nsec >= 1000000000) { \
-            (x)->tv_sec += 1;             \
-            (x)->tv_nsec -= 1000000000;   \
-        }                                 \
-    } while(0);
+#define timespec_add_nsec(x, y)         \
+    do                                  \
+    {                                   \
+        (x)->tv_sec += y / 1000000000;  \
+        (x)->tv_nsec += y % 1000000000; \
+        if ((x)->tv_nsec >= 1000000000) \
+        {                               \
+            (x)->tv_sec += 1;           \
+            (x)->tv_nsec -= 1000000000; \
+        }                               \
+    } while (0);
 
 #define errorf(...) lprintf(stderr, 'E', __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define warnf(...) lprintf(stderr, 'W', __FILE__, __LINE__, __func__, __VA_ARGS__)
@@ -52,7 +56,8 @@ lprintf(FILE *fp, int level, const char *file, int line, const char *func, const
 extern void
 hexdump(FILE *fp, const void *data, size_t size);
 
-struct queue_head {
+struct queue_head
+{
     struct queue_entry *head;
     struct queue_entry *tail;
     unsigned int num;
