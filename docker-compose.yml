@@ -8,5 +8,6 @@ services:
     ports: 
       - "8001:80"
     tty: true
+    working_dir: /root
     cap_add:
       - NET_ADMIN
