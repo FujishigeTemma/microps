@@ -23,11 +23,19 @@ struct ip_hdr
   uint8_t options[0];
 };
 
+struct ip_protocol
+{
+  struct ip_protocol *next;
+  uint8_t type;
+  void (*handler)(const uint8_t *data, size_t len, ip_addr_t src, ip_addr_t dst, struct ip_iface *iface);
+};
+
 const ip_addr_t IP_ADDR_ANY = 0x00000000;       /* 0.0.0.0 */
 const ip_addr_t IP_ADDR_BROADCAST = 0xffffffff; /* 255.255.255.255 */
 
 /* NOTE: if you want to add/delete the entries after net_run(), you need to protect these lists with a mutex. */
 static struct ip_iface *ifaces;
+static struct ip_protocol *protocols;
 
 int ip_addr_pton(const char *p, ip_addr_t *n)
 {
@@ -176,6 +184,7 @@ ip_input(const uint8_t *data, size_t len, struct net_device *dev)
   uint8_t v;
   uint16_t hlen, total, offset;
   char addr[IP_ADDR_STR_LEN];
+  struct ip_protocol *proto;
 
   if (len < IP_HDR_SIZE_MIN)
   {
@@ -231,6 +240,14 @@ ip_input(const uint8_t *data, size_t len, struct net_device *dev)
 
   debugf("dev=%s, iface=%s, protocol=%u, total=%u", dev->name, ip_addr_ntop(iface->unicast, addr, sizeof(addr)), hdr->protocol, total);
   ip_dump(data, total);
+
+  for (proto = protocols; proto; proto = proto->next)
+  {
+    if (proto->type == hdr->protocol)
+    {
+      return proto->handler((uint8_t *)hdr + hlen, total - hlen, hdr->src, hdr->dst, iface);
+    }
+  }
 }
 
 static int
@@ -337,6 +354,36 @@ ip_output(uint8_t protocol, const uint8_t *data, size_t len, ip_addr_t src, ip_a
     return -1;
   }
   return len;
+}
+
+/* NOTE: must not be call after net_run() */
+int ip_protocol_register(uint8_t type, void (*handler)(const uint8_t *data, size_t len, ip_addr_t src, ip_addr_t dst, struct ip_iface *iface))
+{
+  struct ip_protocol *entry;
+
+  for (entry = protocols; entry; entry = entry->next)
+  {
+    if (entry->type == type)
+    {
+      errorf("same protocol is already registered, type=%u", type);
+      return -1;
+    }
+  }
+
+  entry = calloc(1, sizeof(*entry));
+  if (!entry)
+  {
+    errorf("calloc() failure");
+    return -1;
+  }
+
+  entry->type = type;
+  entry->handler = handler;
+  entry->next = protocols;
+  protocols = entry;
+
+  infof("registered, type=%u", entry->type);
+  return 0;
 }
 
 int ip_init(void)
