@@ -5,4 +5,5 @@
 
 - ntop: network binary to printable text
 - pton: printable text to network binary
-- 
+
+- ntoa: network to address

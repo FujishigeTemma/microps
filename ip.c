@@ -213,7 +213,7 @@ ip_input(const uint8_t *data, size_t len, struct net_device *dev)
   }
   if (cksum16((uint16_t *)hdr, hlen, 0) != 0)
   {
-    errorf("checksum failed: sum=0x%04x", ntoh16(hdr->sum));
+    errorf("checksum failed: assumed=0x%04x, sum=0x%04x", ntoh16(hdr->sum), ntoh16(cksum16((uint16_t *)data, len, -hdr->sum)));
     return;
   }
   offset = ntoh16(hdr->offset);
@@ -373,7 +373,7 @@ int ip_protocol_register(uint8_t type, void (*handler)(const uint8_t *data, size
   entry = calloc(1, sizeof(*entry));
   if (!entry)
   {
-    errorf("calloc() failure");
+    errorf("calloc() failed");
     return -1;
   }
 
