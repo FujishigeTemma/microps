@@ -127,8 +127,10 @@ net_device_get_iface(struct net_device *dev, int family)
 {
   struct net_iface *entry;
 
-  for (entry = dev->ifaces; entry; entry = entry->next) {
-    if (entry->family == family) {
+  for (entry = dev->ifaces; entry; entry = entry->next)
+  {
+    if (entry->family == family)
+    {
       break;
     }
   }
