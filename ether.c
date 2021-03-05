@@ -105,7 +105,7 @@ int ether_poll_helper(struct net_device *dev, ssize_t (*callback)(struct net_dev
     flen = callback(dev, frame, sizeof(frame));
     if (flen < (ssize_t)sizeof(*hdr))
     {
-        errorf("ether frame is too short");
+        errorf("too short ether frame");
         return -1;
     }
     hdr = (struct ether_hdr *)frame;

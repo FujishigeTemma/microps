@@ -188,7 +188,7 @@ ip_input(const uint8_t *data, size_t len, struct net_device *dev)
 
   if (len < IP_HDR_SIZE_MIN)
   {
-    errorf("header is too short");
+    errorf("too short ip header");
     return;
   }
 
@@ -226,7 +226,7 @@ ip_input(const uint8_t *data, size_t len, struct net_device *dev)
   iface = (struct ip_iface *)net_device_get_iface(dev, NET_IFACE_FAMILY_IP);
   if (!iface)
   {
-    errorf("IP iface is not registered");
+    errorf("ip iface is not registered");
     return;
   }
 
@@ -324,7 +324,7 @@ ip_output(uint8_t protocol, const uint8_t *data, size_t len, ip_addr_t src, ip_a
 
   if (src == IP_ADDR_ANY)
   {
-    errorf("IP routing is not implemented");
+    errorf("ip routing is not implemented");
     return -1;
   }
   else
