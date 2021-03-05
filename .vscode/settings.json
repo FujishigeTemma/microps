@@ -3,6 +3,8 @@
     "net.h": "c",
     "__locale": "c",
     "__threading_support": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "stat.h": "c",
+    "test.h": "c"
   }
 }
