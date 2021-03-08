@@ -5,6 +5,7 @@
     "__threading_support": "cpp",
     "thread": "cpp",
     "stat.h": "c",
-    "test.h": "c"
+    "test.h": "c",
+    "ether_tap.h": "c"
   }
 }
