@@ -13,6 +13,7 @@
 #include "icmp.h"
 #include "arp.h"
 #include "udp.h"
+#include "tcp.h"
 
 struct net_protocol
 {
@@ -38,15 +39,17 @@ struct net_timer
   void (*handler)(void);
 };
 
-struct net_interrupt_ctx {
-    struct net_interrupt_ctx *prev;
-    struct net_interrupt_ctx *next;
-    int occurred;
+struct net_interrupt_ctx
+{
+  struct net_interrupt_ctx *prev;
+  struct net_interrupt_ctx *next;
+  int occurred;
 };
 
-static struct {
-    struct net_interrupt_ctx *head;
-    pthread_mutex_t mutex;
+static struct
+{
+  struct net_interrupt_ctx *head;
+  pthread_mutex_t mutex;
 } interrupts;
 
 static volatile sig_atomic_t interrupted;
@@ -323,15 +326,17 @@ net_thread(void *arg)
       }
     }
 
-    if (interrupted) {
-            debugf("interrupted");
-            pthread_mutex_lock(&interrupts.mutex);
-            for (ctx = interrupts.head; ctx; ctx = ctx->next) {
-                ctx->occurred = 1;
-            }
-            pthread_mutex_unlock(&interrupts.mutex);
-            interrupted = 0;
-        }
+    if (interrupted)
+    {
+      debugf("interrupted");
+      pthread_mutex_lock(&interrupts.mutex);
+      for (ctx = interrupts.head; ctx; ctx = ctx->next)
+      {
+        ctx->occurred = 1;
+      }
+      pthread_mutex_unlock(&interrupts.mutex);
+      interrupted = 0;
+    }
 
     for (proto = protocols; proto; proto = proto->next)
     {
@@ -400,58 +405,60 @@ void net_shutdown(void)
   debugf("...shutdown");
 }
 
-void
-net_interrupt(void)
+void net_interrupt(void)
 {
-    interrupted = 1;
+  interrupted = 1;
 }
 
 struct net_interrupt_ctx *
 net_interrupt_subscribe(void)
 {
-    struct net_interrupt_ctx *ctx;
+  struct net_interrupt_ctx *ctx;
 
-    ctx = calloc(1, sizeof(struct net_interrupt_ctx));
-    if (!ctx) {
-        errorf("calloc() failed");
-        return NULL;
-    }
-    pthread_mutex_lock(&interrupts.mutex);
-    if (interrupts.head) {
-        ctx->next = interrupts.head;
-        interrupts.head->prev = ctx;
-    }
-    interrupts.head = ctx;
-    pthread_mutex_unlock(&interrupts.mutex);
-    return ctx;
+  ctx = calloc(1, sizeof(struct net_interrupt_ctx));
+  if (!ctx)
+  {
+    errorf("calloc() failed");
+    return NULL;
+  }
+  pthread_mutex_lock(&interrupts.mutex);
+  if (interrupts.head)
+  {
+    ctx->next = interrupts.head;
+    interrupts.head->prev = ctx;
+  }
+  interrupts.head = ctx;
+  pthread_mutex_unlock(&interrupts.mutex);
+  return ctx;
 }
 
-int
-net_interrupt_occurred(struct net_interrupt_ctx *ctx)
+int net_interrupt_occurred(struct net_interrupt_ctx *ctx)
 {
-    int occurred;
+  int occurred;
 
-    pthread_mutex_lock(&interrupts.mutex);
-    occurred = ctx->occurred;
-    pthread_mutex_unlock(&interrupts.mutex);
-    return occurred;
+  pthread_mutex_lock(&interrupts.mutex);
+  occurred = ctx->occurred;
+  pthread_mutex_unlock(&interrupts.mutex);
+  return occurred;
 }
 
-int
-net_interrupt_unsubscribe(struct net_interrupt_ctx *ctx)
+int net_interrupt_unsubscribe(struct net_interrupt_ctx *ctx)
 {
-    pthread_mutex_lock(&interrupts.mutex);
-    if (interrupts.head == ctx) {
-        interrupts.head = ctx->next;
-    }
-    if (ctx->next) {
-        ctx->next->prev = ctx->prev;
-    }
-    if (ctx->prev) {
-        ctx->prev->next = ctx->next;
-    }
-    pthread_mutex_unlock(&interrupts.mutex);
-    return 0;
+  pthread_mutex_lock(&interrupts.mutex);
+  if (interrupts.head == ctx)
+  {
+    interrupts.head = ctx->next;
+  }
+  if (ctx->next)
+  {
+    ctx->next->prev = ctx->prev;
+  }
+  if (ctx->prev)
+  {
+    ctx->prev->next = ctx->next;
+  }
+  pthread_mutex_unlock(&interrupts.mutex);
+  return 0;
 }
 
 int net_init(void)
@@ -476,5 +483,11 @@ int net_init(void)
     errorf("udp_init() failed");
     return -1;
   }
+  if (tcp_init() == -1)
+  {
+    errorf("tcp_init() failed");
+    return -1;
+  }
+
   return 0;
 }
