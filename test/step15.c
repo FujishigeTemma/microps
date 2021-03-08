@@ -30,46 +30,46 @@ setup(void)
 
   if (net_init() == -1)
   {
-    errorf("net_init() failure");
+    errorf("net_init() failed");
     return -1;
   }
   dev = loopback_init();
   if (!dev)
   {
-    errorf("loopback_init() failure");
+    errorf("loopback_init() failed");
     return -1;
   }
   iface = ip_iface_alloc(LOOPBACK_IP_ADDR, LOOPBACK_NETMASK);
   if (!iface)
   {
-    errorf("ip_iface_alloc() failure");
+    errorf("ip_iface_alloc() failed");
     return -1;
   }
   if (ip_iface_register(dev, iface) == -1)
   {
-    errorf("ip_iface_register() failure");
+    errorf("ip_iface_register() failed");
     return -1;
   }
   dev = ether_tap_init(ETHER_TAP_NAME, ETHER_TAP_HW_ADDR);
   if (!dev)
   {
-    errorf("ether_tap_init() failure");
+    errorf("ether_tap_init() failed");
     return -1;
   }
   iface = ip_iface_alloc(ETHER_TAP_IP_ADDR, ETHER_TAP_NETMASK);
   if (!iface)
   {
-    errorf("ip_iface_alloc() failure");
+    errorf("ip_iface_alloc() failed");
     return -1;
   }
   if (ip_iface_register(dev, iface) == -1)
   {
-    errorf("ip_iface_register() failure");
+    errorf("ip_iface_register() failed");
     return -1;
   }
   if (net_run() == -1)
   {
-    errorf("net_run() failure");
+    errorf("net_run() failed");
     return -1;
   }
   return 0;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, on_signal);
   if (setup() == -1)
   {
-    errorf("setup() failure");
+    errorf("setup() failed");
     return -1;
   }
   ip_addr_pton("192.0.2.2", &src);

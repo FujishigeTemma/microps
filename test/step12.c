@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, on_signal);
   if (setup() == -1)
   {
-    errorf("setup() failure");
+    errorf("setup() failed");
     return -1;
   }
   while (!terminate)
