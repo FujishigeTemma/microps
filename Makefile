@@ -15,6 +15,7 @@ TESTS = test/step0.exe \
 				test/step12.exe \
 				test/step13.exe \
 				test/step14.exe \
+				test/step15.exe \
 
 DRIVERS = driver/null.o \
 					driver/loopback.o \
@@ -29,13 +30,13 @@ OBJS = util.o \
 CFLAGS := $(CFLAGS) -g -W -Wall -Wno-unused-parameter -I .
 
 ifeq ($(shell uname),Linux)
-       CFLAGS := $(CFLAGS) -pthread
-       DRIVERS := $(DRIVERS) driver/ether_tap_linux.o
+      CFLAGS := $(CFLAGS) -pthread
+      DRIVERS := $(DRIVERS) driver/ether_tap_linux.o
 endif
 
 ifeq ($(shell uname),Darwin)
-       CFLAGS := $(CFLAGS)
-       DRIVERS := $(DRIVERS)
+      CFLAGS := $(CFLAGS)
+      DRIVERS := $(DRIVERS)
 endif
 
 .SUFFIXES:
