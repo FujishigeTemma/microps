@@ -111,8 +111,8 @@ int ether_poll_helper(struct net_device *dev, ssize_t (*callback)(struct net_dev
     hdr = (struct ether_hdr *)frame;
     if (memcmp(dev->addr, hdr->dst, ETHER_ADDR_LEN) != 0)
     {
-        if (memcmp(ETHER_ADDR_BROADCAST, hdr->dst, ETHER_ADDR_LEN) != 0)
-        { /* for other host */
+        if (memcmp(ETHER_ADDR_BROADCAST, hdr->dst, ETHER_ADDR_LEN) != 0) /* for other host */
+        {
             return -1;
         }
     }
